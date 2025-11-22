@@ -61,8 +61,8 @@ public class App {
             double mse = Metrics.mse(test.y, preds);
             double r2 = Metrics.r2(test.y, preds);
             System.out.println("Task: regression");
-            System.out.println("Test MSE: " + String.format("%.4f", mse));
-            System.out.println("Test R2:  " + String.format("%.4f", r2));
+            System.out.println("Test MSE: " + "%.4f".formatted(mse));
+            System.out.println("Test R2:  " + "%.4f".formatted(r2));
         } else {
             LogisticRegressionGD model = new LogisticRegressionGD();
             model.fit(train.X, train.y, epochs, lr);
@@ -70,8 +70,8 @@ public class App {
             double acc = Metrics.accuracy(test.y, prob, 0.5);
             double f1 = Metrics.f1(test.y, prob, 0.5);
             System.out.println("Task: classification");
-            System.out.println("Test Accuracy: " + String.format("%.4f", acc));
-            System.out.println("Test F1:       " + String.format("%.4f", f1));
+            System.out.println("Test Accuracy: " + "%.4f".formatted(acc));
+            System.out.println("Test F1:       " + "%.4f".formatted(f1));
         }
     }
 
