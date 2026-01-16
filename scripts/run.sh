@@ -17,11 +17,17 @@ else
 fi
 
 if ! "$JAVA_BIN" -version >/dev/null 2>&1; then
-  echo "Error: No working Java runtime found. Please install JDK 17+ and/or set JAVA_HOME." >&2
+  echo "Error: No working Java runtime found. Please install JDK 21+ and/or set JAVA_HOME." >&2
   exit 1
 fi
 
 CMD=${1:-help}
 shift || true
 
-"$JAVA_BIN" -cp "$OUT_DIR" com.smartstudent.cli.App "$CMD" "$@"
+# Build classpath with all JARs in lib directory
+CLASSPATH="$OUT_DIR"
+for jar in "$ROOT_DIR"/lib/*.jar; do
+    CLASSPATH="$CLASSPATH:$jar"
+done
+
+"$JAVA_BIN" -cp "$CLASSPATH" com.smartstudent.cli.App "$CMD" "$@"

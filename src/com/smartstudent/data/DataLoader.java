@@ -25,25 +25,63 @@ public class DataLoader {
         }
         if (featureIdx.isEmpty()) throw new IllegalArgumentException("No numeric features were found");
 
-        double[][] X = new double[n][featureIdx.size()];
-        double[] y = new double[n];
+        List<double[]> validX = new ArrayList<>();
+        List<Double> validY = new ArrayList<>();
+        
         for (int i = 0; i < n; i++) {
             String[] row = csv.rows.get(i);
-            for (int k = 0; k < featureIdx.size(); k++) {
-                X[i][k] = Double.parseDouble(row[featureIdx.get(k)]);
+            try {
+                // Check if label is valid
+                if (row[labelIdx].trim().isEmpty()) continue;
+                double labelVal = Double.parseDouble(row[labelIdx]);
+                
+                // Parse all features
+                double[] features = new double[featureIdx.size()];
+                boolean validRow = true;
+                for (int k = 0; k < featureIdx.size(); k++) {
+                    String val = row[featureIdx.get(k)];
+                    if (val.trim().isEmpty()) {
+                        validRow = false;
+                        break;
+                    }
+                    features[k] = Double.parseDouble(val);
+                }
+                
+                if (validRow) {
+                    validX.add(features);
+                    validY.add(labelVal);
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                // Skip invalid rows
+                continue;
             }
-            y[i] = Double.parseDouble(row[labelIdx]);
+        }
+        
+        if (validX.isEmpty()) {
+            throw new IllegalArgumentException("No valid data rows found");
+        }
+        
+        double[][] X = new double[validX.size()][featureIdx.size()];
+        double[] y = new double[validY.size()];
+        for (int i = 0; i < validX.size(); i++) {
+            X[i] = validX.get(i);
+            y[i] = validY.get(i);
         }
         return new DataSet(X, y, featureNames.toArray(new String[0]), labelColumn);
     }
 
     private static boolean isNumericColumn(List<String[]> rows, int col) {
         int checks = Math.min(10, rows.size());
+        int validCount = 0;
         for (int i = 0; i < checks; i++) {
             String v = rows.get(i)[col];
-            try { Double.parseDouble(v); }
+            if (v.trim().isEmpty()) continue;
+            try { 
+                Double.parseDouble(v);
+                validCount++;
+            }
             catch (NumberFormatException e) { return false; }
         }
-        return true;
+        return validCount > 0;
     }
 }

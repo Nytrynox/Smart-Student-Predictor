@@ -29,6 +29,11 @@ public class CSVReader {
 
     private static String[] parseLine(String line) {
         // Simple CSV split; assumes no quoted commas for demo
-        return line.split(",");
+        String[] parts = line.split(",");
+        // Trim whitespace from each part
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = parts[i].trim();
+        }
+        return parts;
     }
 }
